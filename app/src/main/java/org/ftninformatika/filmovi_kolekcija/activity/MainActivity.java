@@ -52,9 +52,6 @@ public class MainActivity extends AppCompatActivity implements AdapterOmiljeni.O
     Button btnSearch;
     EditText movieName;
     int position = 0;
-    private Detalji detalji;
-    private DatabaseHelper databaseHelper;
-    private SharedPreferences prefs;
 
     List<String> drawerItems;
     Toolbar toolbar;

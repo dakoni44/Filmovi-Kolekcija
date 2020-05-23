@@ -25,7 +25,6 @@
     </com.google.android.material.appbar.AppBarLayout>
 
 
-
     <EditText
         android:id="@+id/ime_filma"
         android:layout_width="match_parent"
@@ -49,9 +48,8 @@
         android:layout_marginStart="10dp"
         android:layout_marginEnd="10dp"
         android:scrollbars="vertical">
-
-
     </androidx.recyclerview.widget.RecyclerView>
+
 
 
 </LinearLayout>
