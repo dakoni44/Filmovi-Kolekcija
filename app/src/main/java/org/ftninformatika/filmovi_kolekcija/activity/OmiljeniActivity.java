@@ -1,5 +1,6 @@
 package org.ftninformatika.filmovi_kolekcija.activity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -11,6 +12,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
@@ -192,6 +194,7 @@ public class OmiljeniActivity extends AppCompatActivity implements AdapterLista.
                         break;
                     case 3:
                         title = "Obrisi sve";
+                        deleteAll();
                         break;
 
 
@@ -225,6 +228,26 @@ public class OmiljeniActivity extends AppCompatActivity implements AdapterLista.
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.detalji_menu, menu);
         return super.onCreateOptionsMenu(menu);
+    }
+
+    public void deleteAll(){
+        new androidx.appcompat.app.AlertDialog.Builder(OmiljeniActivity.this).setMessage("Obrisi sve filmove").setTitle("Obrisi")
+                .setIcon(R.drawable.ic_delete)
+                .setPositiveButton("Potvrdi", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        try {
+                            getDataBaseHelper().getFilmoviDao().deleteBuilder();
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
+                        Toast.makeText(getApplicationContext(),"Filmovi su obrisani",Toast.LENGTH_SHORT).show();
+                    }
+                }).setNegativeButton("Odustani", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+            }
+        }).show();
     }
 
 
