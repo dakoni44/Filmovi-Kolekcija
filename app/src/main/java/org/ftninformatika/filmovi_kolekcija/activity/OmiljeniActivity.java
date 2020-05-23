@@ -231,6 +231,7 @@ public class OmiljeniActivity extends AppCompatActivity implements AdapterLista.
     }
 
     public void deleteAll(){
+
         new androidx.appcompat.app.AlertDialog.Builder(OmiljeniActivity.this).setMessage("Obrisi sve filmove").setTitle("Obrisi")
                 .setIcon(R.drawable.ic_delete)
                 .setPositiveButton("Potvrdi", new DialogInterface.OnClickListener() {
