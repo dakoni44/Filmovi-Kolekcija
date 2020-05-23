@@ -4,11 +4,20 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.RelativeLayout;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -21,11 +30,10 @@ import org.ftninformatika.filmovi_kolekcija.db.Filmovi;
 import org.ftninformatika.filmovi_kolekcija.R;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
-import petarkitanovic.androidkurs.omiljeni.adapteri.AdapterLista;
-import petarkitanovic.androidkurs.omiljeni.db.DatabaseHelper;
-import petarkitanovic.androidkurs.omiljeni.db.model.Filmovi;
+
 
 public class OmiljeniActivity extends AppCompatActivity implements AdapterLista.OnItemClickListener {
 
@@ -35,6 +43,13 @@ public class OmiljeniActivity extends AppCompatActivity implements AdapterLista.
     private List<Filmovi> filmovi;
     private SharedPreferences prefs;
 
+    List<String> drawerItems;
+    Toolbar toolbar;
+    DrawerLayout drawerLayout;
+    ListView drawerList;
+    private RelativeLayout drawerPane;
+    private ActionBarDrawerToggle drawerToggle;
+
     public static String KEY = "KEY";
 
 
@@ -43,11 +58,14 @@ public class OmiljeniActivity extends AppCompatActivity implements AdapterLista.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.omiljeni_activity);
 
+        fillData();
+        setupToolbar();
+        setupDrawer();
+
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
 
         recyclerView = findViewById(R.id.rvRepertoarLista);
-        setupToolbar();
 
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
@@ -64,17 +82,6 @@ public class OmiljeniActivity extends AppCompatActivity implements AdapterLista.
         recyclerView.setAdapter(adapterLista);
 
 
-    }
-
-    public void setupToolbar() {
-        Toolbar toolbar = findViewById(R.id.toolbar_repertoar);
-        setSupportActionBar(toolbar);
-        toolbar.setTitleTextColor(Color.WHITE);
-        final ActionBar actionBar = getSupportActionBar();
-
-        if (actionBar != null) {
-            actionBar.show();
-        }
     }
 
 
@@ -135,4 +142,90 @@ public class OmiljeniActivity extends AppCompatActivity implements AdapterLista.
         super.onResume();
         refresh();
     }
+
+    public void setupToolbar() {
+        toolbar = findViewById(R.id.toolbar_repertoar);
+        setSupportActionBar(toolbar);
+        final ActionBar actionBar = getSupportActionBar();
+
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setHomeAsUpIndicator(R.drawable.menu_drawer);
+            actionBar.setHomeButtonEnabled(true);
+            actionBar.show();
+        }
+    }
+
+    private void fillData() {
+        drawerItems = new ArrayList<>();
+        drawerItems.add("Moji filmovi");
+        drawerItems.add("Pretraga");
+        drawerItems.add("Podesavanja");
+        drawerItems.add("Obrisi sve");
+
+    }
+
+    private void setupDrawer() {
+        drawerList = findViewById(R.id.left_drawer);
+        drawerLayout = findViewById(R.id.drawer_layout);
+        drawerPane = findViewById(R.id.drawerPane);
+
+        drawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                String title = "Unknown";
+                switch (i) {
+                    case 0:
+                        title = "Moji filmovi";
+                       /* Intent settings = new Intent(OmiljeniActivity.this, OmiljeniActivity.class);
+                        startActivity(settings);*/
+                        break;
+                    case 1:
+                        title = "Pretraga";
+                        Intent pretraga = new Intent(OmiljeniActivity.this, MainActivity.class);
+                        startActivity(pretraga);
+                        break;
+                    case 2:
+                        title = "Podesavanja";
+                        Intent settings = new Intent(OmiljeniActivity.this, SettingsActivity.class);
+                        startActivity(settings);
+                        break;
+                    case 3:
+                        title = "Obrisi sve";
+                        break;
+
+
+                }
+                drawerList.setItemChecked(i, true);
+                setTitle(title);
+                drawerLayout.closeDrawer(drawerPane);
+            }
+        });
+        drawerList.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, drawerItems));
+
+
+        drawerToggle = new ActionBarDrawerToggle(
+                this,
+                drawerLayout,
+                toolbar,
+                R.string.app_name,
+                R.string.app_name
+        ) {
+            public void onDrawerClosed(View view) {
+                invalidateOptionsMenu();
+            }
+
+            public void onDrawerOpened(View drawerView) {
+                invalidateOptionsMenu();
+            }
+        };
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.detalji_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+
 }

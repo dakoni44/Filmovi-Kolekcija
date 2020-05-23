@@ -3,8 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appbar"
@@ -22,15 +22,38 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvRepertoarLista"
+
+    <androidx.drawerlayout.widget.DrawerLayout
+        android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginStart="10dp"
-        android:layout_marginEnd="10dp"
-        android:scrollbars="vertical">
+        android:layout_height="match_parent">
 
 
-    </androidx.recyclerview.widget.RecyclerView>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvRepertoarLista"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:scrollbars="vertical"/>
+
+
+        <RelativeLayout
+            android:id="@+id/drawerPane"
+            android:layout_width="280dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="start">
+
+
+            <ListView
+                android:id="@+id/left_drawer"
+                android:layout_width="280dp"
+                android:layout_height="match_parent"
+                android:background="#ffffffff"
+                android:choiceMode="singleChoice" />
+
+        </RelativeLayout>
+
+    </androidx.drawerlayout.widget.DrawerLayout>
 
 </LinearLayout>

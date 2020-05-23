@@ -17,7 +17,6 @@ import org.ftninformatika.filmovi_kolekcija.net.model2.Search;
 
 import java.util.ArrayList;
 
-import petarkitanovic.androidkurs.omiljeni.net.model2.Search;
 
 public class AdapterOmiljeni extends RecyclerView.Adapter<AdapterOmiljeni.MyViewHolder> {
 

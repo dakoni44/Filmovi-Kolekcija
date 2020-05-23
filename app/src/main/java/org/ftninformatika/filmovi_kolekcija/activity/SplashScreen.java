@@ -21,13 +21,14 @@ public class SplashScreen extends Activity {
 
     private SharedPreferences prefs;
     private boolean splash;
-
+    private String splashTime;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         splash = prefs.getBoolean(getString(R.string.splash_key), false);
+        splashTime = prefs.getString(getString(R.string.splashtime_key), "500");
 
         if (splash) {
             setContentView(R.layout.splash_screen);
@@ -35,7 +36,7 @@ public class SplashScreen extends Activity {
             ImageView imageView = findViewById(R.id.imageView);
             InputStream is = null;
             try {
-                is = getAssets().open("repertoar_logo.png");
+                is = getAssets().open("logo.jpg");
                 Drawable drawable = Drawable.createFromStream(is, null);
                 imageView.setImageDrawable(drawable);
             } catch (IOException e) {
@@ -48,7 +49,7 @@ public class SplashScreen extends Activity {
                     startActivity(new Intent(SplashScreen.this, OmiljeniActivity.class));
                     finish();
                 }
-            }, 5000);
+            }, Integer.parseInt(splashTime));
         } else {
             startActivity(new Intent(SplashScreen.this, OmiljeniActivity.class));
             finish();

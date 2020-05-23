@@ -1,8 +1,14 @@
-package petarkitanovic.androidkurs.omiljeni;
+package org.ftninformatika.filmovi_kolekcija.activity;
 
 import android.annotation.SuppressLint;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -15,18 +21,21 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.NotificationCompat;
 import androidx.preference.PreferenceManager;
 
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.squareup.picasso.Picasso;
 
+import org.ftninformatika.filmovi_kolekcija.R;
+import org.ftninformatika.filmovi_kolekcija.db.DatabaseHelper;
+import org.ftninformatika.filmovi_kolekcija.db.Filmovi;
+import org.ftninformatika.filmovi_kolekcija.net.MyService;
+import org.ftninformatika.filmovi_kolekcija.net.model.Detalji;
+
 import java.sql.SQLException;
 import java.util.HashMap;
 
-import petarkitanovic.androidkurs.omiljeni.db.DatabaseHelper;
-import petarkitanovic.androidkurs.omiljeni.db.model.Filmovi;
-import petarkitanovic.androidkurs.omiljeni.net.MyService;
-import petarkitanovic.androidkurs.omiljeni.net.model.Detalji;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -37,10 +46,14 @@ public class DetaljiActivity extends AppCompatActivity {
     private DatabaseHelper databaseHelper;
     private SharedPreferences prefs;
 
+    public static final String NOTIF_CHANNEL_ID = "notif_channel_543";
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.detalji_activity);
+
+        createNotificationChannel();
 
         setupToolbar();
 
@@ -113,8 +126,18 @@ public class DetaljiActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.detalji_menu, menu);
+        getMenuInflater().inflate(R.menu.menu, menu);
         return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.addFav:
+                addFilm();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     public void setupToolbar() {
@@ -128,15 +151,7 @@ public class DetaljiActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.add_film:
-                addFilm();
-                break;
-        }
-        return super.onOptionsItemSelected(item);
-    }
+
 
     public void addFilm() {
 
@@ -146,15 +161,30 @@ public class DetaljiActivity extends AppCompatActivity {
         film.setmImage(detalji.getPoster());
         film.setmImdbId(detalji.getImdbID());
 
+
         try {
             getDataBaseHelper().getFilmoviDao().create(film);
+
+
+            boolean toast = prefs.getBoolean(getString(R.string.toast_key), false);
+            boolean notif = prefs.getBoolean(getString(R.string.notif_key), false);
+
+            if (toast) {
+                Toast.makeText(DetaljiActivity.this, detalji.getTitle()+" uspesno dodat", Toast.LENGTH_LONG).show();
+
+            }
+
+            if (notif) {
+                showNotification(detalji.getTitle()+" uspesno dodat");
+
+            }
+
+        } catch (NumberFormatException e) {
+            Toast.makeText(DetaljiActivity.this, "Rating mora biti broj", Toast.LENGTH_SHORT).show();
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        String tekstNotifikacije = film.getmNaziv() + " je uspesno dodat u omiljene!";
-
-        Toast.makeText(DetaljiActivity.this, tekstNotifikacije, Toast.LENGTH_LONG).show();
 
 
     }
@@ -176,6 +206,35 @@ public class DetaljiActivity extends AppCompatActivity {
             databaseHelper = OpenHelperManager.getHelper(this, DatabaseHelper.class);
         }
         return databaseHelper;
+    }
+
+    private void createNotificationChannel() {
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "My Channel";
+            String description = "Description of My Channel";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(NOTIF_CHANNEL_ID, name, importance);
+            channel.setDescription(description);
+
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
+
+    public void showNotification(String poruka) {
+
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(DetaljiActivity.this, NOTIF_CHANNEL_ID);
+        builder.setSmallIcon(android.R.drawable.ic_input_add);
+        builder.setContentTitle("Filmovi");
+        builder.setContentText(poruka);
+
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_movies);
+
+
+        builder.setLargeIcon(bitmap);
+        notificationManager.notify(1, builder.build());
     }
 }
 

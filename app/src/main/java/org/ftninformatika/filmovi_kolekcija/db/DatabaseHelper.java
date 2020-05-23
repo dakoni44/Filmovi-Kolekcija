@@ -10,7 +10,7 @@ import com.j256.ormlite.table.TableUtils;
 
 import java.sql.SQLException;
 
-import petarkitanovic.androidkurs.omiljeni.db.model.Filmovi;
+
 
 public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 

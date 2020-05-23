@@ -6,8 +6,6 @@ import org.ftninformatika.filmovi_kolekcija.net.model2.Example;
 
 import java.util.Map;
 
-import petarkitanovic.androidkurs.omiljeni.net.model.Detalji;
-import petarkitanovic.androidkurs.omiljeni.net.model2.Example;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.QueryMap;
